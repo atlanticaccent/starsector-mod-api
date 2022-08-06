@@ -1,0 +1,8 @@
+*/target
+**/*.rs.bk
+wasm-pack.log
+*/build/
+
+# Added by cargo
+
+/target

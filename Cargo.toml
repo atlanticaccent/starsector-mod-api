@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "starsector-mod-info",
+  "starsector-mod-info-storage",
+  "starsector-mod-info-shared",
+]
