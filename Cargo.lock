@@ -100,6 +100,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec8a7b6a70fde80372154c65702f00a0f56f3e1c36abbc6c440484be248856db"
 
 [[package]]
+name = "capnp"
+version = "0.14.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82efa3b0ab5e7e32b786334b052560ec0094135f906975d7481651b9ecf31a6a"
+
+[[package]]
 name = "cfg-if"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -790,9 +796,11 @@ dependencies = [
 name = "starsector-mod-info"
 version = "0.1.0"
 dependencies = [
+ "capnp",
  "cfg-if 0.1.10",
  "console_error_panic_hook",
  "serde_json",
+ "starsector-mod-info-shared",
  "worker",
 ]
 
@@ -808,10 +816,12 @@ dependencies = [
 name = "starsector-mod-info-storage-1"
 version = "0.1.0"
 dependencies = [
+ "capnp",
  "cfg-if 0.1.10",
  "console_error_panic_hook",
  "rust-s3",
  "serde_json",
+ "starsector-mod-info-shared",
  "worker",
 ]
 
