@@ -6,15 +6,24 @@ use worker::{wasm_bindgen::JsValue, Fetch, Headers, Request, RequestInit, Respon
 const AMQP_USERNAME: &str = "rbetzayv";
 
 pub async fn installed_mods<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Result<Response> {
-  let _ = req
+  if req
     .headers()
     .get("User-Agent")
     .ok()
     .flatten()
     .and_then(|agent| (!agent.is_empty()).then_some(()))
-    .ok_or_else(|| Response::error("Invalid User-Agent", 400).unwrap_err())?;
+    .is_none()
+  {
+    return Response::error("Invalid User-Agent", 400)
+  }
 
-  let json: Vec<Mod> = req.json().await?;
+  let json: Vec<Mod> = match req.json().await {
+    Ok(json) => json,
+    Err(err) => return match err {
+      worker::Error::SerdeJsonError(_) => Response::error("Malformed request", 400),
+      _ => Err(err)
+    }
+  };
 
   let http_amqp: String = HTTPAmqp::new("write", json)?.try_into()?;
 

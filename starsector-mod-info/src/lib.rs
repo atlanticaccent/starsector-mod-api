@@ -30,7 +30,11 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   // functionality and a `RouteContext` which you can use to  and get route parameters and
   // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
   router
-    .post_async("/installed-mods", installed_mods)
+    .post_async("/installed-mods", |req, ctx| async move {
+      installed_mods(req, ctx)
+        .await
+        .or_else(|err| Response::error(format!("Internal server error: {}", err.to_string()), 500))
+    })
     .get("/worker-version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
       Response::ok(version)
