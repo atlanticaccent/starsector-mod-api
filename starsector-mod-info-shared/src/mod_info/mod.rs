@@ -1,19 +1,26 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use serde_aux::prelude::*;
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Mod {
   mod_id: String,
-  version: VersionUnion,
+  version: Version,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum VersionUnion {
+pub enum Version {
   String(String),
-  Object(Version),
+  Object(VersionObj),
 }
 
-#[derive(Deserialize)]
-pub struct Version {
-
+#[derive(Serialize, Deserialize)]
+pub struct VersionObj {
+  #[serde(deserialize_with = "deserialize_number_from_string")]
+  pub major: i32,
+  #[serde(deserialize_with = "deserialize_number_from_string")]
+  pub minor: i32,
+  #[serde(default)]
+  #[serde(deserialize_with = "deserialize_string_from_number")]
+  pub patch: String,
 }
