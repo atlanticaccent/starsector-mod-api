@@ -1,4 +1,4 @@
-name = "starsector-mod-info-storage-1"
+name = "starsector-mod-info-storage"
 type = "javascript"
 workers_dev = true
 compatibility_date = "2022-08-06"
