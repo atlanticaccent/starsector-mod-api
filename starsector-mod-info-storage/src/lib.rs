@@ -1,6 +1,7 @@
-use serde_json::json;
+use persist::persist;
 use worker::*;
 
+mod persist;
 mod utils;
 
 fn log_request(req: &Request) {
@@ -25,10 +26,17 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   // provide arbitrary data that will be accessible in each route via the `ctx.data()` method.
   let router = Router::new();
 
+  let webhook_key = env.secret("WEBHOOK_KEY")?.to_string();
+
   // Add as many routes as your Worker needs! Each route will get a `Request` for handling HTTP
   // functionality and a `RouteContext` which you can use to  and get route parameters and
   // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
   router
+    .post_async(&format!("/persist/{}", webhook_key), |req, ctx| async move {
+      persist(req, ctx)
+        .await
+        .or_else(|err| Response::error(format!("Internal server error: {}", err.to_string()), 500))
+    })
     .get("/worker-version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
       Response::ok(version)
