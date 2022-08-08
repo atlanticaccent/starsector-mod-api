@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 
-use worker::{Request, Response, RouteContext, Fetch, RequestInit, wasm_bindgen::JsValue, Headers};
-use starsector_mod_info_shared::{mod_info::Mod, amqp::HTTPAmqp};
+use starsector_mod_info_shared::{amqp::HTTPAmqp, mod_info::Mod};
+use worker::{wasm_bindgen::JsValue, Fetch, Headers, Request, RequestInit, Response, RouteContext};
 
 const AMQP_USERNAME: &str = "rbetzayv";
 
@@ -27,11 +27,14 @@ pub async fn installed_mods<D>(mut req: Request, ctx: RouteContext<D>) -> worker
   headers.append("Authorization", &base64)?;
 
   let amqp_request = Request::new_with_init(
-    &format!("https://moose.rmq.cloudamqp.com/api/exchanges/{}/amq.default/publish", AMQP_USERNAME),
+    &format!(
+      "https://moose.rmq.cloudamqp.com/api/exchanges/{}/amq.default/publish",
+      AMQP_USERNAME
+    ),
     RequestInit::new()
       .with_method(worker::Method::Post)
       .with_headers(headers)
-      .with_body(Some(JsValue::from_str(&http_amqp)))
+      .with_body(Some(JsValue::from_str(&http_amqp))),
   )?;
 
   Fetch::Request(amqp_request).send().await
