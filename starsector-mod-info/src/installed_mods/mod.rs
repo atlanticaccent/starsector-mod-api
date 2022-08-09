@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use serde_json::Value;
 use starsector_mod_info_shared::{amqp::HTTPAmqp, mod_info::Mod};
 use worker::{wasm_bindgen::JsValue, Fetch, Headers, Request, RequestInit, Response, RouteContext};
 
@@ -48,5 +49,15 @@ pub async fn installed_mods<D>(mut req: Request, ctx: RouteContext<D>) -> worker
       .with_body(Some(JsValue::from_str(&http_amqp))),
   )?;
 
-  Fetch::Request(amqp_request).send().await
+  let routed = Fetch::Request(amqp_request)
+    .send()
+    .await?
+    .json::<Value>()
+    .await?;
+
+  if routed.get("routed").and_then(|routed| routed.as_bool()).unwrap_or_default() {
+    Response::ok("OK")
+  } else {
+    Response::error("Failed to write to RabbitMQ", 502)
+  }
 }
