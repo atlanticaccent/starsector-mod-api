@@ -14,14 +14,16 @@ pub async fn installed_mods<D>(mut req: Request, ctx: RouteContext<D>) -> worker
     .and_then(|agent| (!agent.is_empty()).then_some(()))
     .is_none()
   {
-    return Response::error("Invalid User-Agent", 400)
+    return Response::error("Invalid User-Agent", 400);
   }
 
   let json: Vec<Mod> = match req.json().await {
     Ok(json) => json,
-    Err(err) => return match err {
-      worker::Error::SerdeJsonError(_) => Response::error("Malformed request", 400),
-      _ => Err(err)
+    Err(err) => {
+      return match err {
+        worker::Error::SerdeJsonError(_) => Response::error("Malformed request", 400),
+        _ => Err(err),
+      }
     }
   };
 
