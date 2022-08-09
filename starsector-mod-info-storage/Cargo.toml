@@ -15,7 +15,6 @@ cfg-if = "0.1.2"
 worker = "0.0.9"
 serde_json = "1.0.67"
 rust-s3 = { version = "0.32.3", default-features = false, features = ["sync"] }
-capnp = "0.14.8"
 
 # Internal
 starsector-mod-info-shared = { path = "../starsector-mod-info-shared" }
