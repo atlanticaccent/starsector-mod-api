@@ -1,10 +1,12 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 use serde_aux::prelude::*;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Mod {
-  mod_id: String,
-  version: Version,
+  pub id: String,
+  pub version: Version,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -12,6 +14,16 @@ pub struct Mod {
 pub enum Version {
   String(String),
   Object(VersionObj),
+}
+
+impl Display for Version {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    let output: String = match self {
+      Version::String(s) => s.to_string(),
+      Version::Object(o) => o.to_string(),
+    };
+    write!(f, "{}", output)
+  }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -24,3 +36,14 @@ pub struct VersionObj {
   #[serde(deserialize_with = "deserialize_string_from_number")]
   pub patch: String,
 }
+
+impl Display for VersionObj {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+    if !self.patch.is_empty() {
+      write!(f, "{}.{}.{}", self.major, self.minor, self.patch)
+    } else {
+      write!(f, "{}.{}", self.major, self.minor)
+    }
+  }
+}
+
