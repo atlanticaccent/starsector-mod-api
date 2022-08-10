@@ -47,3 +47,17 @@ impl Display for VersionObj {
   }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct VersionData {
+  pub total: u32,
+  pub canonical: bool,
+}
+
+impl Default for VersionData {
+  fn default() -> Self {
+    Self {
+      total: 1,
+      canonical: false,
+    }
+  }
+}
