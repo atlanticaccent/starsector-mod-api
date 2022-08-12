@@ -4,6 +4,7 @@ use chrono::{Utc, DateTime};
 use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use serde_aux::prelude::*;
+use uuid::Uuid;
 use worker::Object;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -55,6 +56,8 @@ pub struct VersionData {
   pub total: u32,
   pub canonical: bool,
   pub first_seen: DateTime<Utc>,
+  pub trusted_contributors: Vec<Uuid>,
+  pub identified_contributors: Vec<Uuid>
 }
 
 impl Default for VersionData {
@@ -62,7 +65,9 @@ impl Default for VersionData {
     Self {
       total: 1,
       canonical: false,
-      first_seen: Utc::now()
+      first_seen: Utc::now(),
+      trusted_contributors: vec![],
+      identified_contributors: vec![]
     }
   }
 }

@@ -33,7 +33,7 @@ pub async fn req_mod_data_by_get<D>(
 
 async fn mod_data<D>(ids: HashSet<&str>, threshold: f32, bias_recent: bool, ctx: RouteContext<D>) -> worker::Result<Response> {
   if ids.len() > 300 {
-    return Response::error("Query is excessive", 400);
+    return Response::error("Query too long", 400);
   }
 
   let bucket = ctx.env.bucket("STARSECTOR_MOD_METADATA")?;
