@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use starsector_mod_info_shared::mod_info::{Mod, VersionData, parse_map_from_body};
+use starsector_mod_info_shared::mod_info::{Mod, Metadata, parse_map_from_body};
 use worker::{Request, Response, RouteContext};
 
 pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Result<Response> {
@@ -22,7 +22,7 @@ pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Resul
     if let Some(val) = map.get_mut(&version) {
       val.total += 1;
     } else {
-      map.insert(version, VersionData::default());
+      map.insert(version, Metadata::default());
     }
 
     let stringified_map = serde_json::to_string(&map)?;

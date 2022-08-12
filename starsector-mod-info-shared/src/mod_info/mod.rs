@@ -52,7 +52,7 @@ impl Display for VersionObj {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct VersionData {
+pub struct Metadata {
   pub total: u32,
   pub canonical: bool,
   pub first_seen: DateTime<Utc>,
@@ -60,7 +60,7 @@ pub struct VersionData {
   pub identified_contributors: Vec<Uuid>
 }
 
-impl Default for VersionData {
+impl Default for Metadata {
   fn default() -> Self {
     Self {
       total: 1,
@@ -72,12 +72,12 @@ impl Default for VersionData {
   }
 }
 
-pub async fn parse_map_from_body(body: Object) -> worker::Result<HashMap<String, VersionData>> {
+pub async fn parse_map_from_body(body: Object) -> worker::Result<HashMap<String, Metadata>> {
   let stream = body
     .body()
     .ok_or(worker::Error::RustError(String::from("No body")))?
     .stream()?;
   let bytes: Vec<u8> = stream.try_collect::<Vec<Vec<u8>>>().await?.concat();
 
-  serde_json::from_slice::<HashMap<String, VersionData>>(&bytes).map_err(|err| err.into())
+  serde_json::from_slice::<HashMap<String, Metadata>>(&bytes).map_err(|err| err.into())
 }

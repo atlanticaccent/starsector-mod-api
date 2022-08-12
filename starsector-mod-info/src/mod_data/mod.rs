@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use starsector_mod_info_shared::mod_info::{parse_map_from_body, VersionData};
+use starsector_mod_info_shared::mod_info::{parse_map_from_body, Metadata};
 use worker::{Request, Response, RouteContext};
 
 pub async fn req_mod_data_by_get<D>(
@@ -42,7 +42,7 @@ async fn mod_data<D>(ids: HashSet<&str>, threshold: f32, bias_recent: bool, ctx:
     if let Some(body) = bucket.get(id).execute().await? {
       let dataset = parse_map_from_body(body).await?;
 
-      let mut data = dataset.into_iter().collect::<Vec<(String, VersionData)>>();
+      let mut data = dataset.into_iter().collect::<Vec<(String, Metadata)>>();
       if bias_recent {
         data.sort_unstable_by_key(|k| k.1.first_seen);
       } else {
