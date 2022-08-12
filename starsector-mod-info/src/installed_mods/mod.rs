@@ -55,7 +55,11 @@ pub async fn installed_mods<D>(mut req: Request, ctx: RouteContext<D>) -> worker
     .json::<Value>()
     .await?;
 
-  if routed.get("routed").and_then(|routed| routed.as_bool()).unwrap_or_default() {
+  if routed
+    .get("routed")
+    .and_then(|routed| routed.as_bool())
+    .unwrap_or_default()
+  {
     Response::ok("OK")
   } else {
     Response::error("Failed to write to RabbitMQ", 502)
