@@ -68,6 +68,7 @@ dependencies = [
  "js-sys",
  "num-integer",
  "num-traits",
+ "serde",
  "wasm-bindgen",
  "winapi",
 ]
@@ -539,9 +540,12 @@ name = "starsector-mod-info-shared"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "chrono",
+ "futures-util",
  "serde",
  "serde-aux",
  "serde_json",
+ "worker",
 ]
 
 [[package]]
@@ -550,7 +554,6 @@ version = "0.1.0"
 dependencies = [
  "cfg-if 0.1.10",
  "console_error_panic_hook",
- "futures-util",
  "serde_json",
  "starsector-mod-info-shared",
  "worker",
