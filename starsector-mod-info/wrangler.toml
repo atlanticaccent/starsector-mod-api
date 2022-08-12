@@ -6,6 +6,10 @@ compatibility_date = "2022-08-04"
 [vars]
 WORKERS_RS_VERSION = "0.0.9"
 
+[[r2_buckets]]
+binding = "STARSECTOR_MOD_METADATA"
+bucket_name = "starsector-mod-metadata"
+
 [build]
 command = "cargo install -q worker-build && worker-build --release" # required
 
