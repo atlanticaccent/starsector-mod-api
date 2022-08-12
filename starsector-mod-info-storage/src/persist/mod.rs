@@ -1,7 +1,6 @@
 use std::collections::HashMap;
-use futures_util::TryStreamExt;
 
-use starsector_mod_info_shared::mod_info::{Mod, VersionData};
+use starsector_mod_info_shared::mod_info::{Mod, VersionData, parse_map_from_body};
 use worker::{Request, Response, RouteContext};
 
 pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Result<Response> {
@@ -14,10 +13,7 @@ pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Resul
       .execute()
       .await?
     {
-      let stream = body.body().ok_or(worker::Error::RustError(String::from("No body")))?.stream()?;
-      let bytes: Vec<u8> = stream.try_collect::<Vec<Vec<u8>>>().await?.concat();
-
-      serde_json::from_slice::<HashMap<String, VersionData>>(&bytes)?
+      parse_map_from_body(body).await?
     } else {
       HashMap::new()
     };

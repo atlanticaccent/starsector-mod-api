@@ -1,7 +1,10 @@
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
+use chrono::{Utc, DateTime};
+use futures_util::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use serde_aux::prelude::*;
+use worker::Object;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Mod {
@@ -51,6 +54,7 @@ impl Display for VersionObj {
 pub struct VersionData {
   pub total: u32,
   pub canonical: bool,
+  pub first_seen: DateTime<Utc>,
 }
 
 impl Default for VersionData {
@@ -58,6 +62,17 @@ impl Default for VersionData {
     Self {
       total: 1,
       canonical: false,
+      first_seen: Utc::now()
     }
   }
+}
+
+pub async fn parse_map_from_body(body: Object) -> worker::Result<HashMap<String, VersionData>> {
+  let stream = body
+    .body()
+    .ok_or(worker::Error::RustError(String::from("No body")))?
+    .stream()?;
+  let bytes: Vec<u8> = stream.try_collect::<Vec<Vec<u8>>>().await?.concat();
+
+  serde_json::from_slice::<HashMap<String, VersionData>>(&bytes).map_err(|err| err.into())
 }
