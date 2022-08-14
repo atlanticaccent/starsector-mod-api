@@ -19,6 +19,10 @@ Currently it contains:
   time).
 - starsector-mod-info-shared
   - A library containing shared data types and other code.
+- starsector-mod-info-auth
+  - An authenitcation middleware service, that creates, retrieves and updates information about users.
+  Creation and updates are routed through CloudAMQP to `starsector-mod-info-storage` (we can only have one webhook set
+  up under the free plan). This service is internal, and it's services provided via `starsector-mod-info`.
 
 ## WebAssembly
 

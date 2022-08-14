@@ -1,6 +1,6 @@
 use installed_mods::installed_mods;
 use mod_data::req_mod_data_by_get;
-use starsector_mod_info_shared::rate_limit;
+use starsector_mod_info_shared::{rate_limit, authenticate};
 use worker::*;
 
 mod installed_mods;
@@ -35,6 +35,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   router
     .post_async("/installed-mods", |req, ctx| async move {
       rate_limit!(&req, 10);
+      authenticate!(&req, &ctx);
       installed_mods(req, ctx)
         .await
         .or_else(|err| {

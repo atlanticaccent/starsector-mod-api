@@ -1,4 +1,5 @@
 pub mod amqp;
-pub mod mod_info;
 pub mod cache;
 pub mod middleware;
+pub mod mod_info;
+pub mod worker_result_ext;
