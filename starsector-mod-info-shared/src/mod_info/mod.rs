@@ -1,8 +1,8 @@
-use std::{collections::HashMap, fmt::Display};
+use std::fmt::Display;
 
 use chrono::{Utc, DateTime};
 use futures_util::TryStreamExt;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_aux::prelude::*;
 use uuid::Uuid;
 use worker::Object;
@@ -72,12 +72,12 @@ impl Default for Metadata {
   }
 }
 
-pub async fn parse_map_from_body(body: Object) -> worker::Result<HashMap<String, Metadata>> {
+pub async fn parse_from_object<T: DeserializeOwned>(body: Object) -> worker::Result<T> {
   let stream = body
     .body()
     .ok_or(worker::Error::RustError(String::from("No body")))?
     .stream()?;
   let bytes: Vec<u8> = stream.try_collect::<Vec<Vec<u8>>>().await?.concat();
 
-  serde_json::from_slice::<HashMap<String, Metadata>>(&bytes).map_err(|err| err.into())
+  serde_json::from_slice::<T>(&bytes).map_err(|err| err.into())
 }
