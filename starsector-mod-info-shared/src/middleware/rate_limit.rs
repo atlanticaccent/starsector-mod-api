@@ -21,8 +21,8 @@ use crate::cache::Rate;
 /// ```
 #[macro_export]
 macro_rules! rate_limit {
-  ($req:expr, $limit:expr) => {
-    if let Some(res) = starsector_mod_info_shared::middleware::rate_limit::rate_limit_internal($req, $limit)
+  ($req:expr, $limit:expr, $ident:expr) => {
+    if let Some(res) = starsector_mod_info_shared::middleware::rate_limit::rate_limit_internal($req, $limit, $ident)
       .await
       .transpose()
     {
@@ -31,9 +31,9 @@ macro_rules! rate_limit {
   };
 }
 
-pub async fn rate_limit_internal(req: &Request, limit: u32) -> worker::Result<Option<Response>> {
+pub async fn rate_limit_internal(req: &Request, limit: u32, ident: impl AsRef<str>) -> worker::Result<Option<Response>> {
   if let Some(ip) = req.headers().get("CF-Connecting-IP")? {
-    let key = format!("https://{}.com", encode_uri_component(&ip).to_string());
+    let key = format!("https://{}{}.com", ident.as_ref(), encode_uri_component(&ip).to_string());
     let cache = Cache::default();
     let rate = if let Some(mut cached_rate) = cache.get(&key, true).await? {
       let mut rate: Rate = match cached_rate.json().await {
