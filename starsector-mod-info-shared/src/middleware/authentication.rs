@@ -1,6 +1,6 @@
 use worker::{Request, Response, RouteContext};
 
-use crate::{mod_info::parse_from_object, worker_result_ext::WorkerResultExt};
+use crate::{mod_info::parse_from_object, worker_result_ext::ResultExt};
 
 /// Checks for Authorization header and that the provided credentials are valid.
 /// 

@@ -1,4 +1,5 @@
 use persist::persist;
+use starsector_mod_info_shared::worker_result_ext::ResultResponseExt;
 use worker::*;
 
 mod persist;
@@ -35,11 +36,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     .post_async(&format!("/persist/{}", webhook_key), |req, ctx| async move {
       persist(req, ctx)
         .await
-        .or_else(|err| {
-          console_error!("Internal server error: {}", err.to_string());
-
-          Response::error(format!("Internal server error: {}", err.to_string()), 500)
-        })
+        .or_500()
     })
     .get("/worker-version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();

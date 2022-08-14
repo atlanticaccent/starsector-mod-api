@@ -1,6 +1,6 @@
 use installed_mods::installed_mods;
 use mod_data::req_mod_data_by_get;
-use starsector_mod_info_shared::{rate_limit, authenticate};
+use starsector_mod_info_shared::{rate_limit, authenticate, worker_result_ext::ResultResponseExt};
 use worker::*;
 
 mod installed_mods;
@@ -34,24 +34,16 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
   router
     .post_async("/installed-mods", |req, ctx| async move {
-      rate_limit!(&req, 10);
+      rate_limit!(&req, 10, "installed-mods");
       authenticate!(&req, &ctx);
       installed_mods(req, ctx)
         .await
-        .or_else(|err| {
-          console_error!("Internal server error: {}", err.to_string());
-
-          Response::error(format!("Internal server error: {}", err.to_string()), 500)
-        })
+        .or_500()
     })
     .get_async("/mod-data", |req, ctx| async move {
       req_mod_data_by_get(req, ctx)
         .await
-        .or_else(|err| {
-          console_error!("Internal server error: {}", err.to_string());
-
-          Response::error(format!("Internal server error: {}", err.to_string()), 500)
-        })
+        .or_500()
     })
     .get("/worker-version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
