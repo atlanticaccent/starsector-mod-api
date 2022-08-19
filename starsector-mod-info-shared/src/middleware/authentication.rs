@@ -1,6 +1,6 @@
 use worker::{Request, Response, RouteContext};
 
-use crate::{mod_info::parse_from_object, worker_result_ext::ResultExt};
+use crate::{mod_info::parse_from_object, worker_result_ext::ResultExt, user::User};
 
 /// Checks for Authorization header and that the provided credentials are valid.
 /// 
@@ -46,7 +46,7 @@ pub async fn authenticate_internal<D>(
     return Response::error("Authorization header malformed or missing", 400).map(Some);
   };
 
-  let bucket = ctx.env.bucket("starsector-mod-auth")?;
+  let bucket = ctx.env.bucket("STARSECTOR_MOD_AUTH")?;
 
   let object = if let Some(object) = bucket.get(user).execute().await? {
     object
@@ -54,9 +54,9 @@ pub async fn authenticate_internal<D>(
     return Response::error("Invalid username or password", 401).map(Some);
   };
 
-  let stored: String = parse_from_object(object).await?;
+  let stored: User = parse_from_object(object).await?;
 
-  if pass == stored {
+  if pass == stored.password.to_string() {
     Ok(None)
   } else {
     Response::error("Invalid username or password", 401).map(Some)

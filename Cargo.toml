@@ -3,6 +3,7 @@ members = [
   "starsector-mod-info",
   "starsector-mod-info-storage",
   "starsector-mod-info-shared",
+  "starsector-mod-info-auth",
 ]
 
 [profile.release]

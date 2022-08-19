@@ -13,4 +13,4 @@ base64 = "0.13.0"
 worker = { git = "https://github.com/atlanticaccent/workers-rs.git", branch = "r2-bindings-cont" }
 futures-util = { version = "0.3.21", default-features = false }
 chrono = { version = "0.4.19", default-features = false, features = ["wasmbind", "serde"] }
-uuid = { version = "1.1.2", features = ["serde"] }
+uuid = { version = "1.1.2", features = ["serde", "v4", "js"] }

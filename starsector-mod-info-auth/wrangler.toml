@@ -1,14 +1,10 @@
-name = "starsector-mod-info"
+name = "starsector-mod-info-auth"
 type = "javascript"
 workers_dev = true
-compatibility_date = "2022-08-04"
+compatibility_date = "2022-08-14"
 
 [vars]
 WORKERS_RS_VERSION = "0.0.9"
-
-[[r2_buckets]]
-binding = "STARSECTOR_MOD_METADATA"
-bucket_name = "starsector-mod-metadata"
 
 [[r2_buckets]]
 binding = "STARSECTOR_MOD_AUTH"
