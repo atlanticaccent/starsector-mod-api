@@ -1,9 +1,6 @@
-use starsector_mod_info_shared::rate_limit;
+use starsector_mod_info_shared::{rate_limit, user::User};
 use worker::*;
 
-use crate::generate::generate_user;
-
-mod generate;
 mod utils;
 
 fn log_request(req: &Request) {
@@ -33,10 +30,10 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
   router
     .get_async("/generate", |req, ctx| async move {
-      rate_limit!(&req, 5, "generate");
-      generate_user(ctx).await
+      rate_limit!(&req, 1, "generate");
+      User::new(ctx)?.init().await
     })
-    .get("/worker-version", |_, ctx| {
+    .get("/worker_version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
       Response::ok(version)
     })

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use starsector_mod_info_shared::mod_info::{Mod, Metadata, parse_from_object};
+use starsector_mod_info_shared::{mod_info::{Mod, Metadata}, ParseBody};
 use worker::{Request, Response, RouteContext};
 
 pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Result<Response> {
@@ -13,7 +13,7 @@ pub async fn persist<D>(mut req: Request, ctx: RouteContext<D>) -> worker::Resul
       .execute()
       .await?
     {
-      parse_from_object(body).await?
+      body.parse().await?
     } else {
       HashMap::<String, Metadata>::new()
     };

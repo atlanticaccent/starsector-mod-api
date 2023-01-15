@@ -1,11 +1,12 @@
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
-use chrono::{Utc, DateTime};
-use futures_util::TryStreamExt;
-use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use serde_aux::prelude::*;
-use uuid::Uuid;
-use worker::Object;
+
+use crate::ScoreKey;
+
+mod durable_mod;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Mod {
@@ -56,8 +57,7 @@ pub struct Metadata {
   pub total: u32,
   pub canonical: bool,
   pub first_seen: DateTime<Utc>,
-  pub trusted_contributors: Vec<Uuid>,
-  pub identified_contributors: Vec<Uuid>
+  pub contributors: HashMap<String, ScoreKey>,
 }
 
 impl Default for Metadata {
@@ -66,18 +66,7 @@ impl Default for Metadata {
       total: 1,
       canonical: false,
       first_seen: Utc::now(),
-      trusted_contributors: vec![],
-      identified_contributors: vec![]
+      contributors: HashMap::new(),
     }
   }
-}
-
-pub async fn parse_from_object<T: DeserializeOwned>(body: Object) -> worker::Result<T> {
-  let stream = body
-    .body()
-    .ok_or(worker::Error::RustError(String::from("No body")))?
-    .stream()?;
-  let bytes: Vec<u8> = stream.try_collect::<Vec<Vec<u8>>>().await?.concat();
-
-  serde_json::from_slice::<T>(&bytes).map_err(|err| err.into())
 }

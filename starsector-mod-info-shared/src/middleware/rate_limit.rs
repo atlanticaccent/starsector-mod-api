@@ -57,7 +57,7 @@ pub async fn rate_limit_internal(req: &Request, limit: u32, ident: impl AsRef<st
           "Too many requests. Please wait at least 24 hours before making another request.",
           429,
         )
-        .map(|res| Some(res));
+        .map(Some);
       }
 
       rate.count += 1;

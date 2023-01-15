@@ -1,14 +1,14 @@
 use worker::{Request, Response, RouteContext};
 
-use crate::{mod_info::parse_from_object, worker_result_ext::ResultExt, user::User};
+use crate::{worker_result_ext::ResultExt, user::User};
 
 /// Checks for Authorization header and that the provided credentials are valid.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use starsector_mod_info_shared::authenticate;
-/// 
+///
 /// async fn route<D>(req: worker::Request, ctx: worker::RouteContext<D>) -> worker::Result<worker::Response> {
 ///   authenticate!(&req, &ctx);
 ///
@@ -46,17 +46,11 @@ pub async fn authenticate_internal<D>(
     return Response::error("Authorization header malformed or missing", 400).map(Some);
   };
 
-  let bucket = ctx.env.bucket("STARSECTOR_MOD_AUTH")?;
+  let user = User::from_hex(ctx, &user)?;
 
-  let object = if let Some(object) = bucket.get(user).execute().await? {
-    object
-  } else {
-    return Response::error("Invalid username or password", 401).map(Some);
-  };
+  let stored = user.get_password().await?;
 
-  let stored: User = parse_from_object(object).await?;
-
-  if pass == stored.password.to_string() {
+  if pass == stored {
     Ok(None)
   } else {
     Response::error("Invalid username or password", 401).map(Some)
@@ -64,13 +58,11 @@ pub async fn authenticate_internal<D>(
 }
 
 fn parse_auth_header(auth: String) -> worker::Result<Option<(String, String)>> {
-  let (_, value) = if let Some(split) = auth.split_once(' ') {
-    split
-  } else {
+  let Some(val) = auth.strip_prefix("Basic ") else {
     return Ok(None);
   };
 
-  let decoded = base64::decode(value).conv()?;
+  let decoded = base64::decode(val).conv()?;
 
   if let Some((user, pass)) = String::from_utf8(decoded).conv()?.split_once(':') {
     Ok(Some((user.to_owned(), pass.to_owned())))
