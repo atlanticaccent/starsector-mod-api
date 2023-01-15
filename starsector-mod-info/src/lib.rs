@@ -1,6 +1,6 @@
 use installed_mods::installed_mods;
 use mod_data::req_mod_data_by_get;
-use starsector_mod_info_shared::{rate_limit, authenticate, worker_result_ext::ResultResponseExt};
+use starsector_mod_info_shared::{authenticate, rate_limit, worker_result_ext::ResultResponseExt};
 use worker::*;
 
 mod installed_mods;
@@ -36,14 +36,10 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     .post_async("/installed_mods", |req, ctx| async move {
       rate_limit!(&req, 10, "installed-mods");
       authenticate!(&req, &ctx);
-      installed_mods(req, ctx)
-        .await
-        .or_500()
+      installed_mods(req, ctx).await.or_500()
     })
     .get_async("/mod_data", |req, ctx| async move {
-      req_mod_data_by_get(req, ctx)
-        .await
-        .or_500()
+      req_mod_data_by_get(req, ctx).await.or_500()
     })
     .get("/worker_version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();

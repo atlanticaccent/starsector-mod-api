@@ -2,7 +2,10 @@ use std::str::FromStr;
 
 use futures_util::TryStreamExt;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use worker::{async_trait::async_trait, ByteStream, Object, Response, Request, RouteContext, Env, ObjectNamespace};
+use worker::{
+  async_trait::async_trait, ByteStream, Env, Object, ObjectNamespace, Request, Response,
+  RouteContext,
+};
 use worker_result_ext::ResultExt;
 
 pub mod amqp;
@@ -71,7 +74,7 @@ macro_rules! assert_method {
 
 mod durable {
   pub use worker::{
-    async_trait, durable_object, js_sys, wasm_bindgen, wasm_bindgen_futures, worker_sys
+    async_trait, durable_object, js_sys, wasm_bindgen, wasm_bindgen_futures, worker_sys,
   };
 }
 

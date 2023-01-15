@@ -4,14 +4,14 @@ use crate::cache::Rate;
 
 /// Checks client's IP against cache for number of requests over previous 60 seconds.
 /// Exceeding the limit results in a 24 hour IP ban.
-/// 
+///
 /// Takes a `worker::Request` and a `u32` limit indicating the maximum number of requests.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use starsector_mod_info_shared::rate_limit;
-/// 
+///
 /// async fn route<D>(req: worker::Request, ctx: worker::RouteContext<D>) -> worker::Result<worker::Response> {
 ///   let limit = 25;
 ///   rate_limit!(&req, limit);
@@ -22,18 +22,27 @@ use crate::cache::Rate;
 #[macro_export]
 macro_rules! rate_limit {
   ($req:expr, $limit:expr, $ident:expr) => {
-    if let Some(res) = starsector_mod_info_shared::middleware::rate_limit::rate_limit_internal($req, $limit, $ident)
-      .await
-      .transpose()
+    if let Some(res) =
+      starsector_mod_info_shared::middleware::rate_limit::rate_limit_internal($req, $limit, $ident)
+        .await
+        .transpose()
     {
       return res;
     };
   };
 }
 
-pub async fn rate_limit_internal(req: &Request, limit: u32, ident: impl AsRef<str>) -> worker::Result<Option<Response>> {
+pub async fn rate_limit_internal(
+  req: &Request,
+  limit: u32,
+  ident: impl AsRef<str>,
+) -> worker::Result<Option<Response>> {
   if let Some(ip) = req.headers().get("CF-Connecting-IP")? {
-    let key = format!("https://{}{}.com", ident.as_ref(), encode_uri_component(&ip).to_string());
+    let key = format!(
+      "https://{}{}.com",
+      ident.as_ref(),
+      encode_uri_component(&ip).to_string()
+    );
     let cache = Cache::default();
     let rate = if let Some(mut cached_rate) = cache.get(&key, true).await? {
       let mut rate: Rate = match cached_rate.json().await {

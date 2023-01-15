@@ -1,6 +1,6 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
-use starsector_mod_info_shared::{mod_info::{Metadata}, ParseBody};
+use starsector_mod_info_shared::{mod_info::Metadata, ParseBody};
 use worker::{Request, Response, RouteContext};
 
 pub async fn req_mod_data_by_get<D>(
@@ -31,7 +31,6 @@ async fn mod_data<D>(ids: HashSet<&str>, ctx: RouteContext<D>) -> worker::Result
   for id in ids {
     if let Some(body) = bucket.get(id).execute().await? {
       let dataset: HashMap<String, Metadata> = body.parse().await?;
-
     }
   }
 

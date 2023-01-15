@@ -1,4 +1,4 @@
-use worker::{self, Response, console_error};
+use worker::{self, console_error, Response};
 
 pub trait ResultExt<T, E> {
   fn conv(self) -> worker::Result<T>;

@@ -33,11 +33,10 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   // functionality and a `RouteContext` which you can use to  and get route parameters and
   // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
   router
-    .post_async(&format!("/persist/{}", webhook_key), |req, ctx| async move {
-      persist(req, ctx)
-        .await
-        .or_500()
-    })
+    .post_async(
+      &format!("/persist/{}", webhook_key),
+      |req, ctx| async move { persist(req, ctx).await.or_500() },
+    )
     .get("/worker-version", |_, ctx| {
       let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
       Response::ok(version)

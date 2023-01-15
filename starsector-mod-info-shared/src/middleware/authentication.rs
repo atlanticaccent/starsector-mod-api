@@ -1,6 +1,6 @@
 use worker::{Request, Response, RouteContext};
 
-use crate::{worker_result_ext::ResultExt, user::User};
+use crate::{user::User, worker_result_ext::ResultExt};
 
 /// Checks for Authorization header and that the provided credentials are valid.
 ///
